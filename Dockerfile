@@ -1,19 +1,30 @@
-FROM golang:alpine
+# Build
+FROM golang:alpine AS build
 
-EXPOSE 8000/tcp
+ARG TAG
+ARG BUILD
 
-ENTRYPOINT ["shorturl"]
+ENV APP shorturl
+ENV REPO prologic/$APP
 
-RUN \
-    apk add --update git && \
+RUN apk add --update git make build-base && \
     rm -rf /var/cache/apk/*
 
-RUN mkdir -p /go/src/shorturl
-WORKDIR /go/src/shorturl
+WORKDIR /go/src/github.com/$REPO
+COPY . /go/src/github.com/$REPO
+RUN make TAG=$TAG BUILD=$BUILD build
 
-COPY . /go/src/shorturl
+# Runtime
+FROM scratch
 
-RUN go get -v -d
-RUN go get github.com/GeertJohan/go.rice/rice
-RUN rice embed-go
-RUN go install -v
+ENV APP shorturl
+ENV REPO prologic/$APP
+
+LABEL shorturl.app main
+
+COPY --from=build /go/src/github.com/${REPO}/${APP} /${APP}
+
+EXPOSE 8080/tcp
+
+ENTRYPOINT ["/shorturl"]
+CMD []
