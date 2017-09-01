@@ -1,2 +1,4 @@
+bin
 *.db
 shorturl
+rice-box.go
