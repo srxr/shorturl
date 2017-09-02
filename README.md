@@ -1,11 +1,10 @@
 # shorturl
 
 [![Build Status](https://travis-ci.org/prologic/shorturl.svg)](https://travis-ci.org/prologic/shorturl)
+[![Go Report Card](https://goreportcard.com/badge/github.com/prologic/shorturl)](https://goreportcard.com/report/github.com/prologic/shorturl)
+[![Coverage](https://coveralls.io/repos/prologic/shorturl/badge.svg)](https://coveralls.io/r/prologic/shorturl)
 [![GoDoc](https://godoc.org/github.com/prologic/shorturl?status.svg)](https://godoc.org/github.com/prologic/shorturl)
 [![Wiki](https://img.shields.io/badge/docs-wiki-blue.svg)](https://github.com/prologic/shorturl/wiki)
-[![Go Report Card](https://goreportcard.com/badge/github.com/prologic/shorturl)](https://goreportcard.com/report/github.com/prologic/shorturl)
-[![Image Layers](https://badge.imagelayers.io/prologic/shorturl:latest.svg)](https://imagelayers.io/?images=prologic/shorturl:latest)
-[![Coverage](https://coveralls.io/repos/prologic/shorturl/badge.svg)](https://coveralls.io/r/prologic/shorturl)
 
 shorturl is a web app that allows you to create short urls of much longer more
 complex urls for easier sharing or embedding.
