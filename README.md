@@ -9,8 +9,14 @@ complex urls for easier sharing or embedding.
 
 ### Source
 
+Due to the necessity of the way assets are handled if you are building/installing from source and intend to run outside of the source tree you need to do something like this:
+
 ```#!bash
-$ go install github.com/prologic/shorturl/...
+$ go get github.com/GeertJohan/go.rice/rice
+$ go get github.com/prologic/shorturl
+$ cd $GOPATH/src/github.com/prologic/shorturl
+$ rice embed-go
+$ go build
 ```
 
 ## Usage
