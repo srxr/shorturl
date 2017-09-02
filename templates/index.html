@@ -2,7 +2,27 @@
 <section class="container">
   <div class="columns">
     <div class="column">
-      <form action="" method="POST">
+      {{ range $URL := .URLList }}
+        <div class="input-group">
+          <span class="input-group-addon">
+            {{ $URL.ID }}
+          </span>
+          <i class="icon icon-forward mt-10"></i>
+          <span class="input-group-addon">
+            {{ $URL.URL }}
+          </span>
+          <a class="btn btn-action btn-primary" href="/u/{{$URL.ID}}">
+            <i class="icon icon-forward">View</i>
+          </a>
+          <a class="btn btn-action" href="/e/{{$URL.ID}}">
+            <i class="icon icon-edit">Edit</i>
+          </a>
+          <a class="btn btn-action" href="/d/{{$URL.ID}}">
+            <i class="icon icon-delete">Delete</i>
+          </a>
+        </div>
+      {{end}}
+      <form class="mt-10" action="" method="POST">
         <div class="form-group input-group">
           <label class="form-label" for="input-url"></label>
           <input class="form-input" id="input-url" type="text" name="url" placeholder="Enter long url here...">

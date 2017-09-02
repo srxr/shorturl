@@ -13,9 +13,9 @@ dev: build
 	@./$(APP)
 
 deps:
-	#@go get github.com/GeertJohan/go.rice/rice
+	@go get github.com/GeertJohan/go.rice/rice
 	@go get ./...
-	#@rice embed-go
+	@rice embed-go
 
 build: clean deps
 	@echo " -> Building $(TAG)$(BUILD)"

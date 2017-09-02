@@ -7,13 +7,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/boltdb/bolt"
+	"github.com/asdine/storm"
 	"github.com/namsral/flag"
 )
 
 var (
 	cfg Config
-	db  *bolt.DB
+	db  *storm.DB
 )
 
 func main() {
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	var err error
-	db, err = bolt.Open(dbpath, 0600, nil)
+	db, err = storm.Open(dbpath)
 	if err != nil {
 		log.Fatal(err)
 	}
