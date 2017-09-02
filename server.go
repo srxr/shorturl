@@ -17,6 +17,7 @@ import (
 	"github.com/thoas/stats"
 
 	"github.com/GeertJohan/go.rice"
+	"github.com/asdine/storm"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -66,13 +67,19 @@ type Server struct {
 func (s *Server) render(name string, w http.ResponseWriter, ctx interface{}) {
 	buf, err := s.templates.Exec(name, ctx)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("error rendering template %s: %s", name, err)
+		http.Error(w, "Internal Error", http.StatusInternalServerError)
 	}
 
 	_, err = buf.WriteTo(w)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("error writing template buffer: %s", err)
+		http.Error(w, "Internal Error", http.StatusInternalServerError)
 	}
+}
+
+type IndexContext struct {
+	URLList []*URL
 }
 
 // IndexHandler ...
@@ -80,7 +87,19 @@ func (s *Server) IndexHandler() httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		s.counters.Inc("n_index")
 
-		s.render("index", w, nil)
+		var urlList []*URL
+		err := db.All(&urlList)
+		if err != nil {
+			log.Printf("error querying urls index: %s", err)
+			http.Error(w, "Internal Error", http.StatusInternalServerError)
+			return
+		}
+
+		ctx := &IndexContext{
+			URLList: urlList,
+		}
+
+		s.render("index", w, ctx)
 	}
 }
 
@@ -91,13 +110,15 @@ func (s *Server) ShortenHandler() httprouter.Handle {
 
 		u, err := NewURL(r.FormValue("url"))
 		if err != nil {
+			log.Printf("error creating new url: %s", err)
 			http.Error(w, "Internal Error", http.StatusInternalServerError)
 			return
 		}
 
-		redirectURL, err := url.Parse(fmt.Sprintf("./u/%s", u.ID()))
+		redirectURL, err := url.Parse(fmt.Sprintf("./u/%s", u.ID))
 		if err != nil {
-			http.Error(w, "Internal Error", http.StatusInternalServerError)
+			log.Printf("error parsing redirect url ./u/%s: %s", u.ID, err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
 		http.Redirect(w, r, redirectURL.String(), http.StatusFound)
@@ -107,6 +128,8 @@ func (s *Server) ShortenHandler() httprouter.Handle {
 // ViewHandler ...
 func (s *Server) ViewHandler() httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		var u URL
+
 		s.counters.Inc("n_view")
 
 		id := p.ByName("id")
@@ -115,19 +138,25 @@ func (s *Server) ViewHandler() httprouter.Handle {
 			return
 		}
 
-		u, ok := LookupURL(id)
-		if !ok {
+		err := db.One("ID", id, &u)
+		if err != nil && err == storm.ErrNotFound {
 			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		} else if err != nil {
+			log.Printf("error looking up %s for viewing: %s", id, err)
+			http.Error(w, "Iternal Error", http.StatusInternalServerError)
 			return
 		}
 
 		baseURL, err := url.Parse(s.config.baseURL)
 		if err != nil {
+			log.Printf("error parsing config.baseURL: %s", s.config.baseURL)
 			http.Error(w, "Internal Error", http.StatusInternalServerError)
 		}
 
-		redirectURL, err := url.Parse(fmt.Sprintf("./r/%s", u.ID()))
+		redirectURL, err := url.Parse(fmt.Sprintf("./r/%s", u.ID))
 		if err != nil {
+			log.Printf("error parsing redirect url ./r/%s: %s", u.ID, err)
 			http.Error(w, "Internal Error", http.StatusInternalServerError)
 		}
 
@@ -139,7 +168,7 @@ func (s *Server) ViewHandler() httprouter.Handle {
 				ID  string
 				URL string
 			}{
-				ID:  u.ID(),
+				ID:  u.ID,
 				URL: fullURL.String(),
 			},
 		)
@@ -149,6 +178,8 @@ func (s *Server) ViewHandler() httprouter.Handle {
 // RedirectHandler ...
 func (s *Server) RedirectHandler() httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		var u URL
+
 		s.counters.Inc("n_redirect")
 
 		id := p.ByName("id")
@@ -157,13 +188,17 @@ func (s *Server) RedirectHandler() httprouter.Handle {
 			return
 		}
 
-		u, ok := LookupURL(id)
-		if !ok {
+		err := db.One("ID", id, &u)
+		if err != nil && err == storm.ErrNotFound {
 			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		} else if err != nil {
+			log.Printf("error looking up %s for redirect: %s", id, err)
+			http.Error(w, "Iternal Error", http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, u.url, http.StatusFound)
+		http.Redirect(w, r, u.URL, http.StatusFound)
 	}
 }
 
@@ -173,6 +208,7 @@ func (s *Server) StatsHandler() httprouter.Handle {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		bs, err := json.Marshal(s.stats.Data())
 		if err != nil {
+			log.Printf("error marshalling stats: %s", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		w.Write(bs)
