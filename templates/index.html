@@ -3,12 +3,10 @@
   <div class="columns">
     <div class="column">
       {{ range $URL := .URLList }}
-        <div class="input-group">
-          <span class="input-group-addon">
+        <div class="input-group mb-5">
+          <span class="input-group-addon d-inline-block">
             {{ $URL.ID }}
-          </span>
-          <i class="icon icon-forward mt-10"></i>
-          <span class="input-group-addon">
+            <i class="icon icon-forward"></i>
             {{ $URL.URL }}
           </span>
           <a class="btn btn-action btn-primary" href="/u/{{$URL.ID}}">
