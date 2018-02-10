@@ -24,7 +24,7 @@ LABEL shorturl.app main
 
 COPY --from=build /go/src/github.com/${REPO}/${APP} /${APP}
 
-EXPOSE 8080/tcp
+EXPOSE 8000/tcp
 
 ENTRYPOINT ["/shorturl"]
 CMD []
