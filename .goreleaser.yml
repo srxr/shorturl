@@ -1,0 +1,21 @@
+builds:
+  - main: .
+    binary: shorturl
+    flags: -tags "static_build"
+    ldflags: -w -X shorturl.Version={{.Version}} -X shorturl.Commit={{.Commit}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - freebsd
+      - linux
+    goarch:
+      - i386
+      - amd64
+      - arm
+      - amd64
+    goarm:
+      - 6
+      - 7
+sign:
+  artifacts: checksum
