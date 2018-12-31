@@ -27,8 +27,14 @@ image:
 	@docker build --build-arg TAG=$(TAG) --build-arg BUILD=$(BUILD) -t $(REPO):$(TAG) .
 	@echo "Image created: $(REPO):$(TAG)"
 
+profile:
+	@go test -cpuprofile cpu.prof -memprofile mem.prof -v -bench .
+
+bench:
+	@go test -v -bench .
+
 test:
-	@go test -v -cover -race $(TEST_ARGS)
+	@go test -v -race -cover -coverprofile=coverage.txt -covermode=atomic .
 
 clean:
-	@rm -rf $(APP)
+	@git clean -f -d -X
