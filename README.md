@@ -1,10 +1,10 @@
 # shorturl - A self-hosted URL shortener web app and service
 
-[![Build Status](https://cloud.drone.io/api/badges/prologic/msgbus/status.svg)](https://cloud.drone.io/prologic/msgbus)
-[![CodeCov](https://codecov.io/gh/prologic/msgbus/branch/master/graph/badge.svg)](https://codecov.io/gh/prologic/msgbus)
-[![Go Report Card](https://goreportcard.com/badge/prologic/msgbus)](https://goreportcard.com/report/prologic/msgbus)
-[![GoDoc](https://godoc.org/github.com/prologic/msgbus?status.svg)](https://godoc.org/github.com/prologic/msgbus) 
-[![Sourcegraph](https://sourcegraph.com/github.com/prologic/msgbus/-/badge.svg)](https://sourcegraph.com/github.com/prologic/msgbus?badge)
+[![Build Status](https://cloud.drone.io/api/badges/prologic/shorturl/status.svg)](https://cloud.drone.io/prologic/shorturl)
+[![CodeCov](https://codecov.io/gh/prologic/shorturl/branch/master/graph/badge.svg)](https://codecov.io/gh/prologic/shorturl)
+[![Go Report Card](https://goreportcard.com/badge/prologic/shorturl)](https://goreportcard.com/report/prologic/shorturl)
+[![GoDoc](https://godoc.org/github.com/prologic/shorturl?status.svg)](https://godoc.org/github.com/prologic/shorturl) 
+[![Sourcegraph](https://sourcegraph.com/github.com/prologic/shorturl/-/badge.svg)](https://sourcegraph.com/github.com/prologic/shorturl?badge)
 
 shorturl is a web app that allows you to create short urls of much longer more
 complex urls for easier sharing or embedding.
