@@ -42,6 +42,10 @@ shorturl also displays an absolute url after creating and uses the value of
 `-baseurl` (*default: `""`*) for display purposes. This is useful for copying
 and pasting the shorturl.
 
+## Data Storage
+
+Data is currently stored in a [Bolt](https://github.com/boltdb/bolt) embedded database configured via the `-dbpath` option.
+
 ## License
 
 MIT
