@@ -61,3 +61,19 @@ func (u *URL) update(target string) error {
 	u.UpdatedAt = time.Now()
 	return db.Update(u)
 }
+
+func del(id string) error {
+	var u URL
+
+	err := db.One("ID", id, &u)
+	if err != nil {
+		return err
+	}
+
+	err = db.DeleteStruct(&u)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

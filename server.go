@@ -296,6 +296,29 @@ func (s *Server) ListenAndServe() {
 	)
 }
 
+// DeleteHandler ...
+func (s *Server) DeleteHandler() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+		id := p.ByName("id")
+		if id == "" {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+
+		err := del(id)
+		if err != nil {
+			log.Printf("error delete id: %s: %v", id, err)
+			http.Error(w, "Iternal Error", http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+}
+
 func (s *Server) initRoutes() {
 	s.router.Handler("GET", "/debug/metrics", exp.ExpHandler(s.counters.r))
 	s.router.GET("/debug/stats", s.StatsHandler())
@@ -316,6 +339,7 @@ func (s *Server) initRoutes() {
 	s.router.GET("/r/:id", s.RedirectHandler())
 	s.router.GET("/e/:id", s.EditHandler())
 	s.router.POST("/e/:id", s.UpdateHandler())
+	s.router.GET("/d/:id", s.DeleteHandler())
 }
 
 // NewServer ...
