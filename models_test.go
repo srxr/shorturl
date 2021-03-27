@@ -48,4 +48,7 @@ func TestNewURL(t *testing.T) {
 	assert.NotEqual(u.ID, "")
 	assert.Equal(u.URL, "https://www.google.com")
 	assert.Equal(u.Name, "")
+
+	u, err = NewURL("www.google.com")
+	assert.NotNil(t, err)
 }

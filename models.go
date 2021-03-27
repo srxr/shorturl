@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	nurl "net/url"
+	"strings"
 	"time"
 )
 
@@ -25,9 +28,25 @@ func GenerateID() string {
 }
 
 func NewURL(target string) (url *URL, err error) {
-	url = &URL{ID: GenerateID(), URL: target, CreatedAt: time.Now()}
+	u, err := parse(target)
+	if err != nil {
+		return nil, err
+	}
+
+	url = &URL{ID: GenerateID(), URL: u.String(), CreatedAt: time.Now()}
 	err = db.Save(url)
 	return
+}
+
+func parse(target string) (u *nurl.URL, err error) {
+	u, err = nurl.Parse(strings.TrimSpace(target))
+	if err != nil {
+		return nil, fmt.Errorf("URL (%s) no satisfied", target)
+	}
+	if u.Scheme == "" || u.Host == "" {
+		return nil, fmt.Errorf("URL (%s) without scheme or host", target)
+	}
+	return u, nil
 }
 
 // SetName ...
