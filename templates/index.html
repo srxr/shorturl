@@ -7,7 +7,7 @@
           <span class="input-group-addon d-inline-block">
             {{ $URL.ID }}
             <i class="icon icon-forward"></i>
-            {{ $URL.URL }}
+            {{ $URL.URL -}}
           </span>
           <a class="btn btn-action btn-primary" href="/u/{{$URL.ID}}">
             <i class="icon icon-forward">View</i>
@@ -23,7 +23,7 @@
       <form class="mt-10" action="" method="POST">
         <div class="form-group input-group">
           <label class="form-label" for="input-url"></label>
-          <input class="form-input" id="input-url" type="text" name="url" placeholder="Enter long url here...">
+          <input class="form-input" id="input-url" type="text" name="url" placeholder="Enter long url here..." autofocus>
           <button class="btn btn-primary" type="submit">Shorten</button>
         </div>
       </form>

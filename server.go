@@ -215,6 +215,75 @@ func (s *Server) StatsHandler() httprouter.Handle {
 	}
 }
 
+// EditHandler ...
+func (s *Server) EditHandler() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		var u URL
+
+		id := p.ByName("id")
+		if id == "" {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+
+		err := db.One("ID", id, &u)
+		if err != nil && err == storm.ErrNotFound {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		} else if err != nil {
+			log.Printf("error looking up %s for editing: %s", id, err)
+			http.Error(w, "Iternal Error", http.StatusInternalServerError)
+			return
+		}
+
+		s.render(
+			"edit", w,
+			struct {
+				ID  string
+				URL string
+			}{
+				ID:  u.ID,
+				URL: u.URL,
+			},
+		)
+	}
+}
+
+// UpdateHandler ...
+func (s *Server) UpdateHandler() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		var u URL
+
+		id := p.ByName("id")
+		target := r.FormValue("url")
+		if id == "" || target == "" {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+
+		err := db.One("ID", id, &u)
+		if err != nil && err == storm.ErrNotFound {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		} else if err != nil {
+			log.Printf("error looking up %s for editing: %v", id, err)
+			http.Error(w, "Iternal Error", http.StatusInternalServerError)
+			return
+		}
+
+		err = u.update(target)
+		if err != nil {
+			log.Printf("error updating %s error: %v", id, err)
+			http.Error(w, "Internal Error", http.StatusInternalServerError)
+			return
+		}
+
+		redirectURL := fmt.Sprintf("/u/%s", u.ID)
+
+		http.Redirect(w, r, redirectURL, http.StatusFound)
+	}
+}
+
 // ListenAndServe ...
 func (s *Server) ListenAndServe() {
 	log.Fatal(
@@ -245,6 +314,8 @@ func (s *Server) initRoutes() {
 	s.router.POST("/", s.ShortenHandler())
 	s.router.GET("/u/:id", s.ViewHandler())
 	s.router.GET("/r/:id", s.RedirectHandler())
+	s.router.GET("/e/:id", s.EditHandler())
+	s.router.POST("/e/:id", s.UpdateHandler())
 }
 
 // NewServer ...
@@ -278,8 +349,13 @@ func NewServer(bind string, config Config) *Server {
 	template.Must(viewTemplate.Parse(box.MustString("view.html")))
 	template.Must(viewTemplate.Parse(box.MustString("base.html")))
 
+	editTemplate := template.New("edit")
+	template.Must(editTemplate.Parse(box.MustString("edit.html")))
+	template.Must(editTemplate.Parse(box.MustString("base.html")))
+
 	server.templates.Add("index", indexTemplate)
 	server.templates.Add("view", viewTemplate)
+	server.templates.Add("edit", editTemplate)
 
 	server.initRoutes()
 

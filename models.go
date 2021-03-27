@@ -55,3 +55,9 @@ func (u *URL) SetName(name string) error {
 	u.UpdatedAt = time.Now()
 	return db.Save(&u)
 }
+
+func (u *URL) update(target string) error {
+	u.URL = target
+	u.UpdatedAt = time.Now()
+	return db.Update(u)
+}
