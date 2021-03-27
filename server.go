@@ -256,6 +256,7 @@ func (s *Server) UpdateHandler() httprouter.Handle {
 
 		id := p.ByName("id")
 		target := r.FormValue("url")
+		newID := r.FormValue("id")
 		if id == "" || target == "" {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			return
@@ -271,14 +272,14 @@ func (s *Server) UpdateHandler() httprouter.Handle {
 			return
 		}
 
-		err = u.update(target)
+		err = u.update(newID, target)
 		if err != nil {
 			log.Printf("error updating %s error: %v", id, err)
 			http.Error(w, "Internal Error", http.StatusInternalServerError)
 			return
 		}
 
-		redirectURL := fmt.Sprintf("/u/%s", u.ID)
+		redirectURL := fmt.Sprintf("/u/%s", newID)
 
 		http.Redirect(w, r, redirectURL, http.StatusFound)
 	}

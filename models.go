@@ -56,10 +56,20 @@ func (u *URL) SetName(name string) error {
 	return db.Save(&u)
 }
 
-func (u *URL) update(target string) error {
-	u.URL = target
+func (u *URL) update(id, target string) error {
+	url, err := parse(target)
+	if err != nil {
+		return err
+	}
+
+	if err := del(u.ID); err != nil {
+		return err
+	}
+
+	u.ID = id
+	u.URL = url.String()
 	u.UpdatedAt = time.Now()
-	return db.Update(u)
+	return db.Save(u)
 }
 
 func del(id string) error {
