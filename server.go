@@ -167,9 +167,11 @@ func (s *Server) ViewHandler() httprouter.Handle {
 			struct {
 				ID  string
 				URL string
+				Ori string
 			}{
 				ID:  u.ID,
 				URL: fullURL.String(),
+				Ori: u.URL,
 			},
 		)
 	}

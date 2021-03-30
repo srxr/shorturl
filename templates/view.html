@@ -2,9 +2,10 @@
 <section class="container">
   <div class="columns">
     <div class="column">
-       <p>Your short url is: <a href="/r/{{.ID}}">{{.ID}}</a></p>
+       <p class="text-ellipsis text-secondary">Your short url is: <a href="/r/{{.ID}}">{{.ID}}</a></p>
+       <p class="text-ellipsis text-secondary">Your full url is: <a href="{{.Ori}}">{{.Ori}}</a></p>
        <div class="form-group input-group">
-         <input class="form-input" id="input-url" value="{{.URL}}" readonly />
+         <input class="form-input text-ellipsis" id="input-url" value="{{.URL}}" readonly />
          <button class="btn btn-primary hide" id="btn-copy" data-clipboard-target="#input-url">Copy</button>
          <a class="btn btn-action" href="/e/{{.ID}}">
           <i class="icon icon-edit">Edit</i>
@@ -30,6 +31,12 @@ $(document).ready(function() {
     }, timeout || 3000);
   };
 
+  var padShortURL = function() {
+    var domain = window.location.origin;
+    var short = $("#input-url").val().replace(domain, "");
+    $("#input-url").val(domain + short);
+  };
+
   clipboard.on("success", function(e) {
     e.clearSelection();
     displayTooltip("#btn-copy", "Copied!");
@@ -40,6 +47,8 @@ $(document).ready(function() {
   });
 
   $("#btn-copy").removeClass("hide");
+
+  padShortURL();
 });
 </script>
 {{end}}

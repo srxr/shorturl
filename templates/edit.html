@@ -6,8 +6,8 @@
       <form class="mt-10" action="/e/{{.ID}}" method="POST">
         <div class="form-group input-group">
           <input class="form-input column col-1" type="text" name="id" value="{{.ID}}" />
-          <input class="form-input" type="text" name="url" value="{{.URL}}" placeholder="Enter long url here..." />
-          <button class="btn btn-primary" type="submit">Edit</button>
+          <input class="form-input" id="input-url" type="text" name="url" value="{{.URL}}" placeholder="Enter long url here..." />
+          <button class="btn btn-primary" id="submit" type="submit">OK</button>
           <a class="btn btn-action" href="/u/{{.ID}}">
             <i class="icon icon-forward">View</i>
           </a>
@@ -16,4 +16,21 @@
     </div>
   </div>
 </section>
+{{end}}
+{{define "scripts"}}
+<script src="/js/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+  $("#input-url").focus(function() {
+    $("#submit").removeAttr("data-tooltip", "Please enter long url").removeClass("tooltip tooltip-left");
+  });
+
+  $("#submit").click(function() {
+    if ($("#input-url").val().trim() === "") {
+      $(this).attr("data-tooltip", "Please enter long url").addClass("tooltip tooltip-left");
+      return false;
+    }
+  });
+});
+</script>
 {{end}}
